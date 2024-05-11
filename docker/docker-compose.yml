@@ -8,7 +8,8 @@ services:
       context: ..
     image: geo_view:test
     volumes:
-      - './news:./app/news'
+      - './news:/app/news'
+      - '../geo_view/templates:/app/geo_view/templates'
     ports:
       - '8000:8000'
     expose:

@@ -15,6 +15,10 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+NEWS_DIR = BASE_DIR / 'news'
+LENTA_NEWS_PATH = NEWS_DIR / 'lenta-ru-news.csv.gz'
+NERUS_LENTA_PATH = NEWS_DIR / 'nerus-lenta.conllu.gz'
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -78,31 +82,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'USER': 'postgres',
-        'PASSWORD': 'pass',
+        'PASSWORD': 'postgres',
         'HOST': 'postgres',
         'PORT': '5432',
         'NAME': 'geo_view',
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
 
 
 # Internationalization

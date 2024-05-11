@@ -1,0 +1,55 @@
+name: geo_view
+
+
+services:
+  web-app:
+    build:
+      dockerfile: docker/Dockerfile
+      context: ..
+    image: geo_view:test
+    volumes:
+      - './news:./app/news'
+    ports:
+      - '8000:8000'
+    expose:
+      - 5432
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:latest
+    container_name: django_postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: geo_view
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./volumes/postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d geo_view" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+#  nominatim:
+#    image: mediagis/nominatim:4.4
+#    environment:
+#      PBF_PATH: /nominatim/data/russia-latest.osm.pbf
+#    ports:
+#      - "8080:8080"
+#    volumes:
+#      - "./volumes/nominatim-data:/nominatim/data/"
+#      - "./volumes/nominatim-flatnode:/nominatim/flatnode"
+#      - "./volumes/nominatim-postgres-data:/var/lib/postgresql/14/main"
+#
+#  my-nominatim:
+#    image: my-nominatim:test
+#    build: nominatim
+#    environment:
+#      POSTGRES_HOST: postgres
+#      POSTGRES_PORT: 5432
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASS: postgres

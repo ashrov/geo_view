@@ -1,0 +1,4 @@
+**/*.gz
+**/*.osm.pbf
+volumes
+docker

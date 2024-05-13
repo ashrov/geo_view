@@ -1,10 +1,13 @@
 FROM python:3.12
 
 WORKDIR app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY pyproject.toml .
+COPY geo_view/__init__.py geo_view/__init__.py
+RUN pip install . && pip uninstall -y geo-view
 
 COPY . .
-CMD python manage.py makemigrations geo_view \
-    && python manage.py migrate \
-    && python manage.py runserver 0.0.0.0:8000
+RUN pip install . && rm -rf /app
+
+WORKDIR /
+
+ENV DJANGO_SETTINGS_MODULE="geo_view.settings"

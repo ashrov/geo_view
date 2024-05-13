@@ -1,5 +1,4 @@
-"""
-ASGI config for geo_view project.
+"""ASGI config for geo_view project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

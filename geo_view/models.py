@@ -9,7 +9,7 @@ class Article(models.Model):
     text = models.TextField(default='')
     topic = models.TextField(default='')
     tags = models.TextField(default='')
-    date = models.DateField(null=True)
+    date = models.DateField()
 
     def __str__(self) -> str:
         return f'Article {self.title} {self.date}'

@@ -1,0 +1,62 @@
+[project]
+name = "geo-view"
+description = "Map visualisation for news."
+readme = "README.md"
+
+requires-python = ">=3.12"
+dependencies = [
+    "Django~=5.0",
+    "psycopg~=3.1",
+
+    "corus~=0.10.0",
+#    "slovnet~=0.6.0",
+#    "natasha~=1.6",
+#    "nerus~=1.7",
+
+    "setuptools>=69.5",
+]
+
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "geo_view.__version__"}
+
+[project.optional-dependencies]
+tests = [
+    "ruff~=0.4.4",
+    "mypy~=1.10",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["geo_view", "geo_view.*"]
+
+[tool.setuptools.package-data]
+geo_view = ["*.html", "*.csv"]
+
+
+# --------- Ruff ---------
+[tool.ruff]
+line-length = 120
+include = ["pyproject.toml", "geo_view/**/*.py"]
+exclude = ["**/migrations/**"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "D1", # Разрешаем незадокументированные классы и методы.
+    "ANN002", "ANN003", "ANN1", "ANN4", # Не указываем анотации для self, cls, args и kwargs, и разрешаем Any
+    "RUF001", "RUF002", "RUF003", # Разрешаем юникод символы
+    "G", # Разрешаем логирование с форматированием
+    "DTZ", # Не используем datetime timezone
+]
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+docstring-quotes = "double"
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

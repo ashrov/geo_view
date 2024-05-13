@@ -2,21 +2,30 @@ name: geo_view
 
 
 services:
-  web-app:
+  base-app:
+    image: geo_view
     build:
       dockerfile: docker/Dockerfile
       context: ..
-    image: geo_view:test
-    volumes:
-      - './news:/app/news'
-      - '../geo_view/templates:/app/geo_view/templates'
-    ports:
-      - '8000:8000'
-    expose:
-      - 5432
     depends_on:
       postgres:
         condition: service_healthy
+    command: django-admin migrate
+
+  web-app:
+    extends:
+      service: base-app
+    command: django-admin runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    expose:
+      - 5432
+    healthcheck:
+      test: curl localhost:8000 || exit 1
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   postgres:
     image: postgres:latest
@@ -25,7 +34,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: geo_view
     ports:
-      - "5432:5432"
+      - 5432:5432
     volumes:
       - ./volumes/postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -34,6 +43,19 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+
+  import:
+    extends:
+      service: base-app
+    volumes:
+      - ./scripts:/scripts
+      - ./volumes/news:/news
+    command: bash /scripts/import.sh
+    depends_on:
+      web-app:
+        condition: service_healthy
+    profiles:
+      - import
 
 #  nominatim:
 #    image: mediagis/nominatim:4.4

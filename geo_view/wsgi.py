@@ -1,5 +1,4 @@
-"""
-WSGI config for geo_view project.
+"""WSGI config for geo_view project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

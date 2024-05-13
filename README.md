@@ -2,7 +2,7 @@
 [![Поддерживаемые Python версии](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/release/python-3120/)
 [![Поддерживаемые Python версии](https://img.shields.io/badge/Django-5.0-green.svg)](https://www.djangoproject.com/)
 [![Поддерживаемые Python версии](https://img.shields.io/badge/psycopg-3.1-orange.svg)](https://www.psycopg.org/)
-[![Качество кода](https://api.codacy.com/project/badge/Grade/27011a5a8d9f4b278d1bfe2fe8725fed)]()
+[![Качество кода](https://api.codacy.com/project/badge/Grade/63cae098e6d943d5ba6519da82a79636)](https://app.codacy.com/gh/kkozoriz/geo_view/dashboard)
 
 Веб приложение для визуализации мест из новостей с сайта lenta.ru
 

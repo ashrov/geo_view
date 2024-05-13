@@ -3,11 +3,11 @@
 [![Поддерживаемые Python версии](https://img.shields.io/badge/Django-5.0-green.svg)](https://www.djangoproject.com/)
 [![Поддерживаемые Python версии](https://img.shields.io/badge/psycopg-3.1-orange.svg)](https://www.psycopg.org/)
 [![Качество кода](https://api.codacy.com/project/badge/Grade/27011a5a8d9f4b278d1bfe2fe8725fed)]()
-***
+
 Веб приложение для визуализации мест из новостей с сайта lenta.ru
 
 ## Запуск в докере
-***
+
 ```shell
 docker-compose -f docker/docker-compose.yml up --build
 ```
@@ -19,9 +19,9 @@ docker-compose -f docker/docker-compose.yml up --build
 docker-compose --profile import -f docker/docker-compose.yml up --build
 ```
 ## Дополнительное
-***
-### Линтер и анализатор типов
 
+### Линтер и анализатор типов
+***
 В проект добавлен линтер `ruff` и анализатор `mypy`.
 
 Установка:
@@ -36,5 +36,3 @@ pip install -e ".[tests]"
 ruff check
 mypy --install-types --non-interactive
 ```
-***
-

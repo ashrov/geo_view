@@ -9,7 +9,7 @@ docker-compose -f docker/docker-compose.yml up --build
 ```
 
 Для запуска импорта новостей в базу данных
-необходимо запустить docker-compose с профилем `--import`
+необходимо запустить docker-compose с профилем `import`
 
 ```shell
 docker-compose --profile import -f docker/docker-compose.yml up --build

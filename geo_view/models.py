@@ -7,8 +7,8 @@ class Article(models.Model):
     url = models.TextField(default='')
     title = models.TextField(default='')
     text = models.TextField(default='')
-    topic = models.TextField(default='')
-    tags = models.TextField(default='')
+    topic = models.TextField(default='', db_index=True)
+    tags = models.TextField(default='', db_index=True)
     date = models.DateField()
 
     def __str__(self) -> str:

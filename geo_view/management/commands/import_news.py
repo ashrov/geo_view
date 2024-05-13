@@ -25,7 +25,7 @@ class Command(BaseCommand):
                 Article(
                     url=article.url,
                     title=article.title,
-                    text=article.text,
+                    text=article.text.replace('\xa0', ' '),
                     topic=article.topic,
                     tags=article.tags,
                     date=datetime.strptime(article.date, '%Y/%m/%d'),

@@ -60,3 +60,12 @@ docstring-quotes = "double"
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+
+# --------- MyPy ---------
+[tool.mypy]
+check_untyped_defs = true  # Проверка функций без аннотаций
+show_error_codes = true  # В выводе ошибок показываем коды ошибок
+ignore_missing_imports = true  # Не ругаемся на отсутствие стабов
+packages = ["geo_view"]
+exclude = ["migrations"]

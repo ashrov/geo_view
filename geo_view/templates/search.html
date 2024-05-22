@@ -25,9 +25,19 @@
                        placeholder="2024-01-01 11:11:11"
                        aria-label="start"
                        value="">
-
-
                 <small class="form-text">Если указать, будут выбраны новости до указанной даты (не включительно).</small>
+            </div>
+        </div>
+        <div class="mb-4 row">
+            <div class="col-12">
+                <label class="form-label">Максимальное количество меток</label>
+                <input type="text"
+                       class="form-control"
+                       name="limit"
+                       placeholder="1000"
+                       aria-label="limit"
+                       value="1000">
+                <small class="form-text">Если указано не нулевое число, то им будет ограничено количиство выведенных меток.</small>
             </div>
         </div>
         <button type="submit" class="btn btn-primary mb-4">Найти новости</button>

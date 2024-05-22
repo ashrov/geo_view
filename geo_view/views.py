@@ -8,3 +8,16 @@ def search_view(request: HttpRequest) -> HttpResponse:
         request,
         'search.html',
     )
+
+
+def map_view(request: HttpRequest) -> HttpResponse:
+    """View для отображения карты."""
+    return render(
+        request,
+        'map.html',
+        context={
+            'positions': [
+                (10.1, 20.1),
+            ],
+        },
+    )

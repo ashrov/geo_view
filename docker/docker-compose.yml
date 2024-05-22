@@ -16,6 +16,8 @@ services:
     extends:
       service: app.base
     command: django-admin runserver 0.0.0.0:8000
+    volumes:
+      - ../geo_view:/usr/local/lib/python3.12/site-packages/geo_view
     ports:
       - 8000:8000
     expose:

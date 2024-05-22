@@ -10,14 +10,14 @@
 ## Запуск в докере
 
 ```shell
-docker-compose -f docker/docker-compose.yml up --build
+docker-compose -f docker/docker-compose.yml up --build --force-recreate
 ```
 
 Для запуска импорта новостей в базу данных
 необходимо запустить docker-compose с профилем `import`
 
 ```shell
-docker-compose --profile import -f docker/docker-compose.yml up --build
+docker-compose --profile import -f docker/docker-compose.yml up --build --force-recreate
 ```
 
 ## Дополнительное

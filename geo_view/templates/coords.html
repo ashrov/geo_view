@@ -1,0 +1,31 @@
+{% extends "common.html" %}
+{%  load static %}
+
+{% block content %}
+    <form method="get">
+        <div class="mb-4 row">
+            <div class="col-12">
+                <label class="form-label">Название места</label>
+                <input type="text"
+                       class="form-control"
+                       name="name"
+                       placeholder="Москва"
+                       aria-label="name"
+                       value="">
+                <small class="form-text">Введите название места для поиска.</small>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mb-4">Найти</button>
+        <div class="mb-4 row">
+            {% if display_name %}
+                <div class="col-12">
+                    <div>
+                        Место - {{ display_name }}<br>
+                        Широта - {{ lat }}<br>
+                        Долгота - {{ lon }}<br>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+{% endblock %}

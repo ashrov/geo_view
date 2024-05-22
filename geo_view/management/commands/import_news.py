@@ -28,7 +28,7 @@ class Command(BaseCommand):
                     text=article.text.strip(),
                     topic=article.topic,
                     tags=article.tags,
-                    date=datetime.strptime(article.date, '%Y/%m/%d'),
+                    date=datetime.strptime(article.date, '%Y/%m/%d').date(),
                 )
                 for article in articles
             ]

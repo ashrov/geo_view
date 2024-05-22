@@ -37,8 +37,8 @@ services:
       - ./volumes/news:/news
     command: bash -c "bash /scripts/import.sh && bash /scripts/process-locations.sh"
     depends_on:
-      app.web:
-        condition: service_healthy
+      app.base:
+        condition: service_completed_successfully
     profiles:
       - import
 
@@ -78,5 +78,3 @@ services:
       - "./volumes/nominatim-data:/nominatim/data/"
       - "./volumes/nominatim-flatnode:/nominatim/flatnode"
       - "./volumes/nominatim-postgres-data:/var/lib/postgresql/14/main"
-    profiles:
-      - import

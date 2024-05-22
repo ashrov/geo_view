@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from .views import search_view, map_view
+from .views import coords_view, map_view, search_view
 
 urlpatterns = [
+    path('', search_view),
     path('admin/', admin.site.urls),
     path('search/', search_view),
+    path('coords/', coords_view),
     path('map/', map_view),
 ]

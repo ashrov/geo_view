@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from django.db import models
 
 
@@ -9,7 +7,7 @@ class Article(models.Model):
     text = models.TextField(default='')
     topic = models.TextField(default='', db_index=True)
     tags = models.TextField(default='', db_index=True)
-    date = models.DateField()
+    date = models.DateField(db_index=True)
 
     def __str__(self) -> str:
         return f'Article {self.url} {self.title} {self.date}'

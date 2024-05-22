@@ -1,11 +1,29 @@
+from dataclasses import dataclass
 from datetime import date
 from typing import Any
 
+from django.conf import settings
+from django.db.models import Count
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from pydantic import BaseModel, ValidationError, field_validator
 
+from geo_view import __version__
+from geo_view.management.commands.process_locations import ProcessWorker
 from geo_view.models import GeoPosition
+
+
+def get_global_context(_: HttpRequest) -> dict:
+    return {
+        'version': __version__,
+    }
+
+
+@dataclass
+class SearchStat:
+    articles_count: int
+    positions_count: int
+    shown_count: int = 0
 
 
 class SearchOptions(BaseModel):
@@ -22,23 +40,32 @@ class SearchOptions(BaseModel):
 
     @property
     def as_query(self) -> str:
-        return '&'.join(f'{field}={value}' for field, value in self.model_dump(mode='json', exclude_defaults=True).items())
+        return '&'.join(
+            f'{field}={value}'
+            for field, value in self.model_dump(
+                mode='json',
+                exclude_defaults=True,
+            ).items()
+        )
 
-    def get_positions(self) -> list[GeoPosition]:
-        postions = GeoPosition.objects.all()
+    def get_positions(self) -> tuple[SearchStat, list[GeoPosition]]:
+        positions = GeoPosition.objects.all()
         if self.start:
-            postions = postions.filter(article__date__gte=self.start)
+            positions = positions.filter(article__date__gte=self.start)
         if self.end:
-            postions = postions.filter(article__date__lt=self.start)
-        if self.limit:
-            postions = postions[:self.limit]
-        return list(postions)
+            positions = positions.filter(article__date__lt=self.end)
+
+        raw_stat = positions.aggregate(positions_count=Count('id'), articles_count=Count('article_id', distinct=True))
+        stat = SearchStat(**raw_stat)
+
+        positions = positions[:(self.limit or settings.POSITIONS_DISPLAY_LIMIT)]
+        positions_list = list(positions)
+        stat.shown_count = len(positions_list)
+        return stat, positions_list
 
 
 def search_view(request: HttpRequest) -> HttpResponse:
     """View для отображения главной страницы веб-приложения."""
-    options = SearchOptions()
-
     if request.method == 'POST':
         try:
             options = SearchOptions(**request.POST.dict())
@@ -47,7 +74,9 @@ def search_view(request: HttpRequest) -> HttpResponse:
             return render(
                 request,
                 'search.html',
-                context={'options': options, 'errors': errors},
+                context={
+                    'errors': errors,
+                },
             )
 
         return redirect(
@@ -57,18 +86,31 @@ def search_view(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         'search.html',
-        context={'options': options},
     )
 
 
 def map_view(request: HttpRequest) -> HttpResponse:
     """View для отображения карты."""
     options = SearchOptions(**request.GET.dict())
+    stat, positions = options.get_positions()
 
     return render(
         request,
         'map.html',
         context={
-            'positions': options.get_positions(),
+            'stat': stat,
+            'positions': positions,
         },
+    )
+
+
+def coords_view(request: HttpRequest) -> HttpResponse:
+    loc = {}
+    if request.method == 'GET':
+        loc = ProcessWorker().get_nominatim_info(request.GET.dict().get('name', '')) or {}
+
+    return render(
+        request,
+        'coords.html',
+        context=loc,
     )

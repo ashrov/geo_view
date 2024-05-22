@@ -1,42 +1,38 @@
 {% extends "base.html" %}
-{%  load static %}
 
 {% block page %}
-    {% block navbar %}
+    <header class="border-bottom">
+        <nav class="navbar navbar-expand-sm navbar-static-top navbar-light">
+            <div class="container-xxl">
 
-        <header class="border-bottom">
-            <nav class="navbar navbar-expand-sm navbar-static-top navbar-light">
-                <div class="container-xxl">
-
-                    <div class="nav">
-                        <span class="navbar-brand">Geo View</span>
-                        <ul class="nav">
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page"
-                                   href="/search/">Поиск по параметрам</a>
-                            </li>
-                        </ul>
-                    </div>
-
+                <div class="nav">
+                    <span class="navbar-brand">Geo View</span>
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page"
+                               href="/search/">Поиск по параметрам</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page"
+                               href="/coords/">Поиск координат</a>
+                        </li>
+                    </ul>
                 </div>
-            </nav>
-        </header>
 
-    {% endblock %}
-    <main class="flex-shrink-0">
-        {% block content_container %}
-            <div class="container-xxl mt-4">
-                {% block content %}
-                {% endblock %}
             </div>
-        {% endblock %}
+        </nav>
+    </header>
+
+    <main class="flex-shrink-0">
+        <div class="container-xxl mt-4">
+            {% block content %}
+            {% endblock %}
+        </div>
     </main>
 
-    {% block footer %}
-        <footer class="footer mt-auto py-3">
-            <div class="container">
-                <span class="text-muted">App version: {{ version }}</span>
-            </div>
-        </footer>
-    {% endblock %}
+    <footer class="footer mt-auto py-3">
+        <div class="container">
+            <span class="text-muted">App version: {{ version }}</span>
+        </div>
+    </footer>
 {% endblock %}

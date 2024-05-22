@@ -1,0 +1,2 @@
+recursive-include geo_view/templates *
+recursive-include geo_view/static *

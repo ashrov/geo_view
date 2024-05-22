@@ -1,10 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Search</title>
-</head>
-<body>
+{% extends "common.html" %}
+{%  load static %}
 
-</body>
-</html>
+{% block content %}
+    <form method="get">
+        <div class="mb-4 row">
+            {% with field=form.start %}
+                <div class="col-12">
+                    <label class="form-label">Начало периода</label>
+                    <input type="text"
+                           class="form-control"
+                           name="title"
+                           placeholder="2000-01-01"
+                           aria-label="start"
+                           value="">
+
+                    {% for error in field.errors %}
+                        <span class="invalid-feedback">{{ error }}</span>
+                    {% empty %}
+                        <small class="form-text">Если указать, будут выбраны новости после указанной даты.</small>
+                    {% endfor %}
+                </div>
+            {% endwith %}
+
+        </div>
+        <button type="submit" class="btn btn-primary">Найти новости</button>
+    </form>
+{% endblock %}

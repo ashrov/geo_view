@@ -7,11 +7,12 @@ requires-python = ">=3.12"
 dependencies = [
     "Django~=5.0",
     "psycopg~=3.1",
+    "redis~=5.0",
+    "requests~=2.31",
+    "tqdm",
 
-    "corus~=0.10.0",
-#    "slovnet~=0.6.0",
-#    "natasha~=1.6",
-#    "nerus~=1.7",
+    "pymorphy3~=2.0",
+    "natasha~=1.6.0",
 
     "setuptools>=69.5",
 ]
@@ -32,10 +33,10 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["geo_view", "geo_view.*"]
+include = ["geo_view"]
 
 [tool.setuptools.package-data]
-geo_view = ["*.html", "*.csv"]
+"*" = ["*.html", "*.css", "*.js"]
 
 
 # --------- Ruff ---------

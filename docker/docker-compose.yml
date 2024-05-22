@@ -2,7 +2,7 @@ name: geo_view
 
 
 services:
-  base-app:
+  app.base:
     image: geo_view
     build:
       dockerfile: docker/Dockerfile
@@ -12,24 +12,37 @@ services:
         condition: service_healthy
     command: django-admin migrate
 
-  web-app:
+  app.web:
     extends:
-      service: base-app
+      service: app.base
     command: django-admin runserver 0.0.0.0:8000
     ports:
-      - "8000:8000"
+      - 8000:8000
     expose:
       - 5432
     healthcheck:
-      test: curl localhost:8000 || exit 1
+      test: curl localhost:8000/search || exit 1
       interval: 20s
       timeout: 5s
       retries: 5
       start_period: 10s
 
+  app.import:
+    extends:
+      service: app.base
+    volumes:
+      - ./scripts:/scripts
+      - ./volumes/news:/news
+    command: bash -c "bash /scripts/import.sh && bash /scripts/process-locations.sh"
+    depends_on:
+      app.web:
+        condition: service_healthy
+    profiles:
+      - import
+
   postgres:
     image: postgres:latest
-    container_name: django_postgres
+    container_name: postgres
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: geo_view
@@ -44,35 +57,24 @@ services:
       retries: 5
       start_period: 10s
 
-  import:
-    extends:
-      service: base-app
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - 6379:6379
     volumes:
-      - ./scripts:/scripts
-      - ./volumes/news:/news
-    command: bash /scripts/import.sh
-    depends_on:
-      web-app:
-        condition: service_healthy
+      - "./volumes/redis-data:/data"
+
+  nominatim:
+    image: mediagis/nominatim:4.4
+    environment:
+      IMPORT_STYLE: street
+      PBF_PATH: /nominatim/data/russia-latest.osm.pbf
+    ports:
+      - 8080:8080
+    volumes:
+      - "./volumes/nominatim-data:/nominatim/data/"
+      - "./volumes/nominatim-flatnode:/nominatim/flatnode"
+      - "./volumes/nominatim-postgres-data:/var/lib/postgresql/14/main"
     profiles:
       - import
-
-#  nominatim:
-#    image: mediagis/nominatim:4.4
-#    environment:
-#      PBF_PATH: /nominatim/data/russia-latest.osm.pbf
-#    ports:
-#      - "8080:8080"
-#    volumes:
-#      - "./volumes/nominatim-data:/nominatim/data/"
-#      - "./volumes/nominatim-flatnode:/nominatim/flatnode"
-#      - "./volumes/nominatim-postgres-data:/var/lib/postgresql/14/main"
-#
-#  my-nominatim:
-#    image: my-nominatim:test
-#    build: nominatim
-#    environment:
-#      POSTGRES_HOST: postgres
-#      POSTGRES_PORT: 5432
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASS: postgres

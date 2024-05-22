@@ -12,7 +12,7 @@ from geo_view.models import Article
 class Command(BaseCommand):
     def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument('--news-file', required=True, type=Path)
-        parser.add_argument('--batch-size', default=10000, type=int)
+        parser.add_argument('--batch-size', default=1000, type=int)
 
     @transaction.atomic(savepoint=False)
     def handle(self, *_, news_file: Path, batch_size: int, **__) -> None:
@@ -24,8 +24,8 @@ class Command(BaseCommand):
             to_create = [
                 Article(
                     url=article.url,
-                    title=article.title,
-                    text=article.text.replace('\xa0', ' '),
+                    title=article.title.replace('\xa0', ' '),
+                    text=article.text.strip(),
                     topic=article.topic,
                     tags=article.tags,
                     date=datetime.strptime(article.date, '%Y/%m/%d'),

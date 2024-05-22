@@ -12,12 +12,13 @@ class Article(models.Model):
     date = models.DateField()
 
     def __str__(self) -> str:
-        return f'Article {self.title} {self.date}'
+        return f'Article {self.url} {self.title} {self.date}'
 
 
 class GeoPosition(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='geo_positions')
     name = models.TextField()
+    quote = models.TextField()
     lat = models.FloatField()
     lon = models.FloatField()
 

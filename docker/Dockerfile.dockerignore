@@ -2,3 +2,4 @@
 **/*.osm.pbf
 volumes
 docker
+.*

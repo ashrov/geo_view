@@ -1,4 +1,5 @@
 # GeoView
+
 [![Поддерживаемые Python версии](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/release/python-3120/)
 [![Поддерживаемые Python версии](https://img.shields.io/badge/Django-5.0-green.svg)](https://www.djangoproject.com/)
 [![Поддерживаемые Python версии](https://img.shields.io/badge/psycopg-3.1-orange.svg)](https://www.psycopg.org/)
@@ -18,10 +19,11 @@ docker-compose -f docker/docker-compose.yml up --build
 ```shell
 docker-compose --profile import -f docker/docker-compose.yml up --build
 ```
+
 ## Дополнительное
 
 ### Линтер и анализатор типов
-***
+
 В проект добавлен линтер `ruff` и анализатор `mypy`.
 
 Установка:

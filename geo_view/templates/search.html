@@ -2,45 +2,41 @@
 {%  load static %}
 
 {% block content %}
-    <form method="get">
+    <form method="post">
+        {% csrf_token %}
         <div class="mb-4 row">
-            {% with field=form.start %}
-                <div class="col-12">
-                    <label class="form-label">Начало периода</label>
-                    <input type="text"
-                           class="form-control"
-                           name="start"
-                           placeholder="2024-01-01 11:11:11"
-                           aria-label="start"
-                           value="">
-
-                    {% for error in field.errors %}
-                        <span class="invalid-feedback">{{ error }}</span>
-                    {% empty %}
-                        <small class="form-text">Если указать, будут выбраны новости после указанной даты.</small>
-                    {% endfor %}
-                </div>
-            {% endwith %}
+            <div class="col-12">
+                <label class="form-label">Начало периода</label>
+                <input type="text"
+                       class="form-control"
+                       name="start"
+                       placeholder="2024-01-01 11:11:11"
+                       aria-label="start"
+                       value="">
+                <small class="form-text">Если указать, будут выбраны новости после указанной даты.</small>
+            </div>
         </div>
         <div class="mb-4 row">
-            {% with field=form.start %}
-                <div class="col-12">
-                    <label class="form-label">Конец периода</label>
-                    <input type="text"
-                           class="form-control"
-                           name="end"
-                           placeholder="2024-01-01 11:11:11"
-                           aria-label="start"
-                           value="">
+            <div class="col-12">
+                <label class="form-label">Конец периода</label>
+                <input type="text"
+                       class="form-control"
+                       name="end"
+                       placeholder="2024-01-01 11:11:11"
+                       aria-label="start"
+                       value="">
 
-                    {% for error in field.errors %}
-                        <span class="invalid-feedback">{{ error }}</span>
-                    {% empty %}
-                        <small class="form-text">Если указать, будут выбраны новости до указанной даты (не включительно).</small>
-                    {% endfor %}
-                </div>
-            {% endwith %}
+
+                <small class="form-text">Если указать, будут выбраны новости до указанной даты (не включительно).</small>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary">Найти новости</button>
+        <button type="submit" class="btn btn-primary mb-4">Найти новости</button>
+        <div class="mb-4 row">
+            {% for error in errors %}
+                <div class="col-12">
+                    <label class="form-label">Ошибка: {{ error }}</label>
+                </div>
+            {% endfor %}
+        </div>
     </form>
 {% endblock %}

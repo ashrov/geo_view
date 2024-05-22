@@ -11,3 +11,4 @@ RUN pip install . && rm -rf /app
 WORKDIR /
 
 ENV DJANGO_SETTINGS_MODULE="geo_view.settings"
+ENV PYTHONUNBUFFERED=1

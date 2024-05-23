@@ -16,6 +16,8 @@ from geo_view.models import Article, GeoPosition
 
 
 class MorphVocab(MorphAnalyzer):
+    """Костыль, чтобы в natasha использовать pymorphy3, вместо pymorphy2 (она не работает с python 3.12)."""
+
     def __init__(self) -> None:
         MorphAnalyzer.__init__(self, result_type=MorphForm)
 
@@ -32,6 +34,8 @@ class MorphVocab(MorphAnalyzer):
 
 
 class ProcessWorker:
+    """Обработчик статей."""
+
     def __init__(self) -> None:
         self._nominatim_url = settings.NOMINATIM_URL
         self._morph_vocab = MorphVocab()
@@ -43,6 +47,7 @@ class ProcessWorker:
         self._morph_tagger = NewsMorphTagger(embedding)
 
     def process(self) -> None:
+        """Запуск обработки всех необработанных статей."""
         articles = (
             Article.objects.annotate(pos_count=models.Count('geo_positions'))
             .filter(pos_count=0).only('text').iterator()
@@ -53,6 +58,7 @@ class ProcessWorker:
 
     @transaction.atomic(savepoint=False)
     def process_article(self, article: Article) -> None:
+        """Обработка одной статьи."""
         for quote, normal_form in self.get_locations(article):
             result = self.get_nominatim_info(normal_form)
 
@@ -66,6 +72,7 @@ class ProcessWorker:
                 ).save()
 
     def get_nominatim_info(self, loc: str) -> dict | None:
+        """Получение информации о месте из nominatim."""
         cache_key = loc.replace(' ', '_')
         result = cache.get(cache_key)
         if result is not None:
@@ -85,6 +92,7 @@ class ProcessWorker:
         return None
 
     def get_locations(self, article: Article) -> Iterator[tuple[str, str]]:
+        """Парсинг текста статьи на локации."""
         doc = Doc(article.text)
 
         doc.segment(self._segmenter)
@@ -100,5 +108,6 @@ class ProcessWorker:
 
 class Command(BaseCommand):
     def handle(self, *_, **__) -> None:
+        """Скрипт обработки статей из базы данных (получение гео меток)."""
         worker = ProcessWorker()
         worker.process()

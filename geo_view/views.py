@@ -21,12 +21,16 @@ def get_global_context(_: HttpRequest) -> dict:
 
 @dataclass
 class SearchStat:
+    """Статистика запроса поиска."""
+
     articles_count: int
     positions_count: int
     shown_count: int = 0
 
 
 class SearchOptions(BaseModel):
+    """Параметры поиска."""
+
     start: date | None = None
     end: date | None = None
     limit: int | None = None
@@ -34,12 +38,14 @@ class SearchOptions(BaseModel):
     @field_validator('start', 'end', mode='before')
     @classmethod
     def validate_datetime(cls, value: Any) -> date | None:
+        """Валидатор для даты, в который может прийти пустая строка, её надо обработать как `None`."""
         if not value:
             return None
         return date.fromisoformat(value)
 
     @property
     def as_query(self) -> str:
+        """Представление параметров в виде query для url."""
         return '&'.join(
             f'{field}={value}'
             for field, value in self.model_dump(
@@ -49,6 +55,7 @@ class SearchOptions(BaseModel):
         )
 
     def get_positions(self) -> tuple[SearchStat, list[GeoPosition]]:
+        """Получение позиций по параметрам."""
         positions = GeoPosition.objects.all()
         if self.start:
             positions = positions.filter(article__date__gte=self.start)
@@ -105,6 +112,7 @@ def map_view(request: HttpRequest) -> HttpResponse:
 
 
 def coords_view(request: HttpRequest) -> HttpResponse:
+    """View для отображения страницы поиска места."""
     loc = {}
     if request.method == 'GET':
         loc = ProcessWorker().get_nominatim_info(request.GET.dict().get('name', '')) or {}

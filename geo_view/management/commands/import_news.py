@@ -16,6 +16,11 @@ class Command(BaseCommand):
 
     @transaction.atomic(savepoint=False)
     def handle(self, *_, news_file: Path, batch_size: int, **__) -> None:
+        """Скрипт для загрузки новостей из `csv.gz` файла в базу данных.
+
+        :arg news_file: Путь до файла с новостями.
+        :arg batch_size: Размер пачек, которыми статью будут загружаться в бд.
+        """
         news = load_lenta(news_file)
 
         Article.objects.all().delete()

@@ -4,7 +4,7 @@
 {% block content %}
     <div>Количество статей подходящих под параметры: {{ stat.articles_count }}</div>
     <div>Количество меток подходящих под параметры: {{ stat.positions_count }}</div>
-    <div>Меток отображено: {{ stat.shown_count }}</div>
+    <div>Статей отображено: {{ stat.articles_shown }}</div>
     <div id="map" style="width: 100%; height: 800px"></div>
 {% endblock %}
 
@@ -81,16 +81,16 @@
              * Данные передаются вторым параметром в конструктор метки, опции - третьим.
              */
 
-            {% for position in positions %}
+            {% for location in locations %}
                 geoObjects.push(
                     new ymaps.Placemark(
-                        [{{ position.lat }}, {{ position.lon }}],
+                        [{{ location.position.lat }}, {{ location.position.lon }}],
                         getPointData(
-                            "{{ position.name }}",
-                            "{{ position.quote }}",
-                            "{{ position.article.title }}",
-                            "{{ position.article.url }}",
-                            "{{ position.article.text }}",
+                            "{{ location.position.display_name }}",
+                            "{{ location.quote }}",
+                            "{{ location.article.title }}",
+                            "{{ location.article.url }}",
+                            "{{ location.article.text }}",
                         ),
                         getPointOptions()
                     )

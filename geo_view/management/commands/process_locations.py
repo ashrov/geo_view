@@ -12,7 +12,7 @@ from natasha.morph.tagger import NewsMorphTagger
 from natasha.morph.vocab import CACHE_SIZE, MorphForm
 from pymorphy3 import MorphAnalyzer
 
-from geo_view.models import Article, GeoPosition
+from geo_view.models import Article, GeoPosition, Location
 
 
 class MorphVocab(MorphAnalyzer):
@@ -49,27 +49,34 @@ class ProcessWorker:
     def process(self) -> None:
         """Запуск обработки всех необработанных статей."""
         articles = (
-            Article.objects.annotate(pos_count=models.Count('geo_positions'))
-            .filter(pos_count=0).only('text').iterator()
+            Article.objects.annotate(locations_count=models.Count('locations'))
+            .filter(processed=False).only('text').iterator()
         )
 
         for article in articles:
             self.process_article(article)
 
+        GeoPosition.clean_up()
+
     @transaction.atomic(savepoint=False)
     def process_article(self, article: Article) -> None:
         """Обработка одной статьи."""
+        article.locations.all().delete()
+
         for quote, normal_form in self.get_locations(article):
             result = self.get_nominatim_info(normal_form)
 
             if result:
-                GeoPosition(
+                position = GeoPosition.get_by_full_name(result['display_name'], lat=result['lat'], lon=result['lon'])
+
+                Location(
                     article=article,
-                    name=result['display_name'],
+                    position=position,
                     quote=quote,
-                    lat=result['lat'],
-                    lon=result['lon'],
                 ).save()
+
+        article.processed = True
+        article.save()
 
     def get_nominatim_info(self, loc: str) -> dict | None:
         """Получение информации о месте из nominatim."""

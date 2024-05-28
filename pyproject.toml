@@ -12,6 +12,7 @@ dependencies = [
     "tqdm~=4.66",
     "pydantic~=2.7",
 
+    "corus~=0.10.0",
     "pymorphy3~=2.0",
     "natasha~=1.6",
 

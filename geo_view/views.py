@@ -10,7 +10,7 @@ from pydantic import BaseModel, ValidationError, field_validator
 
 from geo_view import __version__
 from geo_view.management.commands.process_locations import ProcessWorker
-from geo_view.models import GeoPosition
+from geo_view.models import GeoPosition, Location
 
 
 def get_global_context(_: HttpRequest) -> dict:
@@ -25,7 +25,7 @@ class SearchStat:
 
     articles_count: int
     positions_count: int
-    shown_count: int = 0
+    articles_shown: int = 0
 
 
 class SearchOptions(BaseModel):
@@ -33,6 +33,7 @@ class SearchOptions(BaseModel):
 
     start: date | None = None
     end: date | None = None
+    place: str = ''
     limit: int | None = None
 
     @field_validator('start', 'end', mode='before')
@@ -42,6 +43,15 @@ class SearchOptions(BaseModel):
         if not value:
             return None
         return date.fromisoformat(value)
+
+    @field_validator('place')
+    @classmethod
+    def validate_place(cls, value: str) -> str:
+        if value and not GeoPosition.objects.filter(name=value).first():
+            msg = f'No such place for "{value}"'
+            raise ValueError(msg)
+
+        return value
 
     @property
     def as_query(self) -> str:
@@ -54,21 +64,27 @@ class SearchOptions(BaseModel):
             ).items()
         )
 
-    def get_positions(self) -> tuple[SearchStat, list[GeoPosition]]:
+    def get_positions(self) -> tuple[SearchStat, list[Location]]:
         """Получение позиций по параметрам."""
-        positions = GeoPosition.objects.all()
+        locations = Location.objects.all()
         if self.start:
-            positions = positions.filter(article__date__gte=self.start)
+            locations = locations.filter(article__date__gte=self.start)
         if self.end:
-            positions = positions.filter(article__date__lt=self.end)
+            locations = locations.filter(article__date__lt=self.end)
+        if self.place:
+            children = GeoPosition.get_all_children(self.place)
+            locations = locations.filter(position__in=children)
 
-        raw_stat = positions.aggregate(positions_count=Count('id'), articles_count=Count('article_id', distinct=True))
+        raw_stat = locations.aggregate(
+            positions_count=Count('position_id', distinct=True),
+            articles_count=Count('article_id', distinct=True),
+        )
         stat = SearchStat(**raw_stat)
 
-        positions = positions[:(self.limit or settings.POSITIONS_DISPLAY_LIMIT)]
-        positions_list = list(positions)
-        stat.shown_count = len(positions_list)
-        return stat, positions_list
+        locations = locations[:(self.limit or settings.POSITIONS_DISPLAY_LIMIT)]
+        locations_list = list(locations.prefetch_related('article', 'position'))
+        stat.articles_shown = len(locations_list)
+        return stat, locations_list
 
 
 def search_view(request: HttpRequest) -> HttpResponse:
@@ -85,10 +101,10 @@ def search_view(request: HttpRequest) -> HttpResponse:
                     'errors': errors,
                 },
             )
-
-        return redirect(
-            f'/map/?{options.as_query}',
-        )
+        else:
+            return redirect(
+                f'/map/?{options.as_query}',
+            )
 
     return render(
         request,
@@ -99,14 +115,14 @@ def search_view(request: HttpRequest) -> HttpResponse:
 def map_view(request: HttpRequest) -> HttpResponse:
     """View для отображения карты."""
     options = SearchOptions(**request.GET.dict())
-    stat, positions = options.get_positions()
+    stat, locations = options.get_positions()
 
     return render(
         request,
         'map.html',
         context={
             'stat': stat,
-            'positions': positions,
+            'locations': locations,
         },
     )
 
